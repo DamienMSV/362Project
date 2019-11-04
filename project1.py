@@ -1,3 +1,28 @@
+
+import os
+import textract
+import PyPDF2
+
+Implementation:
+def doc2string(path,file):
+   # define 'fileContent'
+   fileContent = ""
+   if file.endswith(('.txt', '.docx', '.pptx', '.xlsx')):
+       fileContent = textract.process(path+'/'+file)
+       parsedFile = fileContent.decode('utf-8')
+       return parsedFile
+
+Usage example:
+
+str = doc2string(path,file)
+print(str)
+
+
+
+
+
+
+
 from tkinter import *
 from tkinter.filedialog import askdirectory
 import tkinter as tk
