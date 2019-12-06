@@ -85,6 +85,7 @@ class MyFrame(Frame):
         self.scrollbar.config(command=self.listbox.yview)
         self.listbox.config(yscrollcommand=self.scrollbar.set)
         self.listbox.grid(row=0, column=0, sticky=NE)
+        self.listbox.bind('<Double-Button-1>', self.open_file)
         self.scrollbar.grid(row=0, column=1, sticky=NS)
         # Open File
         self.frame_open_file = Frame(self, bg='#052f38')
@@ -129,7 +130,7 @@ class MyFrame(Frame):
                     if has_text(name, os.path.join(root, name), search_text):
                         self.listbox.insert(END, os.path.join(root, name))
 
-    def open_file(self):
+    def open_file(self, event):
         self.file_content.delete("1.0", END)
         search_text = self.text_to_search.get()
         path = self.listbox.get(self.listbox.curselection())
