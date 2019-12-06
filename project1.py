@@ -1,47 +1,34 @@
-
-import os
-import textract
-import PyPDF2
-
-Implementation:
-def doc2string(path,file):
-   # define 'fileContent'
-   fileContent = ""
-   if file.endswith(('.txt', '.docx', '.pptx', '.xlsx')):
-       fileContent = textract.process(path+'/'+file)
-       parsedFile = fileContent.decode('utf-8')
-       return parsedFile
-
-Usage example:
-
-str = doc2string(path,file)
-print(str)
-
-
-
-
-
-
-
 from tkinter import *
 from tkinter.filedialog import askdirectory
 import tkinter as tk
 from tkinter.font import Font
 import os
+import textract
+import PyPDF2
+
+SUPPORTED_EXT = ['.txt', '.docx', '.pptx', '.xlsx']  # MORE CAN BE ADDED
+
+# Implementation:
+def doc2string(path):
+   # define 'fileContent'
+   fileContent = ""
+   if path.endswith(('.txt', '.docx', '.pptx', '.xlsx')):
+       fileContent = textract.process(path)
+       parsedFile = fileContent.decode('utf-8').split('\n')
+       return parsedFile
+
+# Usage example:
+#
+# str = doc2string(path,file)
+# print(str)
 
 
 def has_text(filename, path, text):
-   if text in filename:
-       print("Test in name " + filename)
-       return True
-   f = open(path, "r", errors='ignore')
-   l1 = f.readlines()
+   lines = doc2string(path)
    print(filename)
-   for line in l1:
-       if " " + text + " " in line:
-           f.close()
+   for line in lines:
+       if line.lower().find(text.lower()) is not -1:
            return True
-   f.close()
    return False
 
 
@@ -142,16 +129,17 @@ class MyFrame(Frame):
            print("Number of folder searched: " + str(len(dirs)))
            print("Number of file searched: " + str(len(files)))
            for name in files:
-               if name.endswith(".txt"):
-                   if has_text(name, os.path.join(root, name), search_text):
-                       self.listbox.insert(END, os.path.join(root, name))
+                if search_text.lower() in name.lower():
+                    self.listbox.insert(END, os.path.join(root, name))
+                elif name.endswith(tuple(SUPPORTED_EXT)):
+                    if has_text(name, os.path.join(root, name), search_text):
+                        self.listbox.insert(END, os.path.join(root, name))
 
    def open_file(self):
        self.file_content.delete("1.0", END)
        search_text = self.text_to_search.get()
        path = self.listbox.get(self.listbox.curselection())
-       f = open(path, "r", errors='ignore')
-       lines = f.readlines()
+       lines = doc2string(path)
        for line in lines:
            if search_text in line:
                l1 = line.partition(search_text)
@@ -167,40 +155,3 @@ class MyFrame(Frame):
 
 if __name__ == "__main__":
    MyFrame().mainloop()
-
-
-def has_text(path, key):
-   file = openfile(path);
-   line = file.readline()
-   while line != '':
-       index = line.lower().find(key.lower())
-       if index is not -1:
-           return True
-       line = file.readline()
-   return False
-
-def search(key, address):
-   results = []
-   for fAddress, subDirs, fNames in os.walk(address):
-       fAddress += "\\"
-       for fName in fNames:
-           if not fName.endswith(tuple(SUPPORTED_EXT)):
-               if key.lower() in fName.lower():
-                   results.append((fName, fAddress))
-           else:
-               file = openfile(fAddress + fName)  # ADD
-               if hastext(file, key):
-                   results.append((fName, fAddress))
-   return results
-
-def getKeyIndex(file, key):
-   results = []        # tuple(line, index)
-   line = file.readline()
-   line_num = 1
-   while line != '':
-       index = line.lower().find(key.lower())
-       while index is not -1:
-           results.append((line_num, index))
-           index += 1
-       line = file.readline()
-   return results
