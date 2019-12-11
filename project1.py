@@ -13,10 +13,9 @@ def doc2string(path):
     # define 'fileContent'
     fileContent = ""
     path = path.replace('/', '\\')
-    if path.endswith(('.txt', '.docx', '.pptx', '.xlsx')):
-        fileContent = textract.process(path)
-        parsedFile = fileContent.decode('utf-8').split('\n')
-        return parsedFile
+    fileContent = textract.process(path)
+    parsedFile = fileContent.decode('utf-8').split('\n')
+    return parsedFile
 
 
 def has_text(filename, path, text):
@@ -33,7 +32,7 @@ class MyFrame(Frame):
         Frame.__init__(self)
         # Title and Iconbitmap
         self.master.title("File Search Engine")
-        self.master.iconbitmap(r'icon.ico')
+        #self.master.iconbitmap(r'icon.ico')
         self.master.rowconfigure(5, weight=1)
         self.master.columnconfigure(5, weight=1)
         self.grid(sticky=W + E + N + S)
@@ -138,13 +137,13 @@ class MyFrame(Frame):
         path = self.listbox.get(self.listbox.curselection())
         lines = doc2string(path)
         for line in lines:
-            if search_text.lower() in line.lower():
+            if search_text in line:
                 l1 = line.partition(search_text)
                 for l in l1:
                     if l != search_text:
                         self.file_content.insert(END, l)
                     else:
-                        self.file_content.tag_config("highlight", background='red')
+                        self.file_content.tag_config("highlight", background='orange')
                         self.file_content.insert(END, l, "highlight")
             else:
                 self.file_content.insert(END, line + '\n')
