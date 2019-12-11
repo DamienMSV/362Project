@@ -5,12 +5,14 @@ from tkinter.font import Font
 import os
 import textract
 
-SUPPORTED_EXT = ['.txt', '.docx', '.pptx', '.xlsx']  # MORE CAN BE ADDED
+
+SUPPORTED_EXT = ['.txt', '.docx', '.pptx', '.xlsx']
 
 
 def doc2string(path):
     # define 'fileContent'
     fileContent = ""
+    path = path.replace('/', '\\')
     if path.endswith(('.txt', '.docx', '.pptx', '.xlsx')):
         fileContent = textract.process(path)
         parsedFile = fileContent.decode('utf-8').split('\n')
@@ -130,13 +132,13 @@ class MyFrame(Frame):
                     if has_text(name, os.path.join(root, name), search_text):
                         self.listbox.insert(END, os.path.join(root, name))
 
-    def open_file(self, event):
+    def open_file(self, event=0):
         self.file_content.delete("1.0", END)
         search_text = self.text_to_search.get()
         path = self.listbox.get(self.listbox.curselection())
         lines = doc2string(path)
         for line in lines:
-            if search_text in line:
+            if search_text.lower() in line.lower():
                 l1 = line.partition(search_text)
                 for l in l1:
                     if l != search_text:
